@@ -142,3 +142,14 @@ Removes quotes unescaping inner quotes
 
 #### HeadersParser.unchanged( text )
 Returns text
+
+## aab-utils/node
+Improves variables in global:
+* TextDecoder, TextEncoder
+* atob, btoa
+
+## aab-utils/node/dom
+Improves DOMException in global.
+
+## aab-utils/node/crypto
+Improves crypto.getRandomValues() in global.
