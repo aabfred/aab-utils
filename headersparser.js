@@ -80,6 +80,7 @@ const
     },
     attrs = (o, [k, op, v]) => {
         if( op == "=" ) o[k] = v;
+        else if( !op && !v ) o[k] = true;
         else throw new SyntaxError(`attrs: op should be "=", found "${ op }"`);
         return o;
     };
