@@ -1,1 +1,2 @@
 require( "./headersparser" );
+require( "./comparison" );
