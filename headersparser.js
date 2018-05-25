@@ -97,7 +97,7 @@ class HeadersParser {
         let { key, multi, parse, cas } = options;
         const conf = { header };
         if( key ) conf.key = key;
-        if( multi ) conf.multi = true;
+        if( multi ) conf.multi = multi;
         if( cas == "upper" ) conf.cas = "toUpperCase";
         if( cas == "lower" ) conf.cas = "toLowerCase";
         if( !parse ) parse = "decode";
@@ -131,17 +131,31 @@ class HeadersParser {
         const
             result = {},
             pairs = headers2pairs[ type ]( headers );
-        for( const { header, key, multi, parse, cas } of this.HEADERS ){
-            let values = pairs.reduce( (a,[k,v]) => k == header? a.concat(v) : a, [] );
-            if( values.length ){
-                if( cas ) values = values.map( x => x[cas]() );
-                if( multi ) values = values.map( parse.bind( this ) );
-                else values = parse.call( this, values[0] );
-                if( key ) result[ key ] = values;
-                else Object.assign( result, values );
+        for( const conf of this.HEADERS ){
+            const
+                { header, key } = conf,
+                value = this.parseOne( conf, pairs.reduce( (a,[k,v]) => k == header? a.concat(v) : a, [] ) );
+            if( value !== undefined ){
+                if( key ) result[ key ] = value;
+                else Object.assign( result, value );
             }
         }
         return result;
+    }
+    parseOne( conf, values ){
+        if( !values.length ) return;
+        const { multi, parse, cas } = conf;
+        if( cas ) values = values.map( x => x[cas]() );
+        return multi?
+            values.map( parse.bind( this ) ) :
+            parse.call( this, values[0] );
+    }
+
+    nextString( idx, txt ){
+        const parts = [];
+        let i = token( idx, txt, parts );
+        if( !i ) i = quotes( idx, txt, parts );
+        if( i ) return { index: i, text: parts[0] };
     }
 
     split( keep, txt ){
@@ -157,12 +171,6 @@ class HeadersParser {
             i = n;
         }
         return parts;
-    }
-    nextString( idx, txt ){
-        const parts = [];
-        let i = token( idx, txt, parts );
-        if( !i ) i = quotes( idx, txt, parts );
-        if( i ) return { index: i, text: parts[0] };
     }
     decode( txt ){
         const parts = this.split( true, txt );
@@ -193,6 +201,10 @@ class HeadersParser {
     }
     
 }
+HeadersParser.TOKEN = TOKEN;
+HeadersParser.SPACE = SPACE;
+HeadersParser.DELIMITERS = DELIMITERS;
+HeadersParser.LAST = LAST;
 HeadersParser.quote = quote;
 HeadersParser.unquote = unquote;
 HeadersParser.unchanged = unchanged;
