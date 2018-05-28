@@ -1,7 +1,7 @@
 {
   "name": "aab-utils",
   "description": "a@b framework - Utils",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Frédéric Declercq <frederic.declercq@aab.life>",
   "license": "MIT",
   "repository": {
