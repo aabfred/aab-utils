@@ -36,7 +36,7 @@ const
 
         /* === Core methods === */
 
-        define( cls ){
+        define( cls, options={} ){
             /* Usage:   Comparison.define( MyClass )   */
             if( Comparison.type( cls ) !== "class" )
                 throw new SyntaxError( "Not a class" );
@@ -46,8 +46,16 @@ const
             if( this.CLASSES.includes( cls ) )
                 return false;
             this.CLASSES.push( cls );
-            this.PRIORITY.splice( this.PRIORITY.indexOf( "instance" ), 0, name );
-            this.PRECENDENCE.splice( this.PRECENDENCE.indexOf( "instance" ), 0, name );
+            this.PRIORITY.splice( options.priority || this.PRIORITY.indexOf( "instance" ), 0, name );
+            this.PRECENDENCE.splice( options.precedence || this.PRECENDENCE.indexOf( "instance" ), 0, name );
+
+            if( options.convert )
+                this.CONVERT[ name ] = options.convert;
+            if( options.compare )
+                this.COMPARE[ name ] = options.compare;
+            if( options.empty )
+                this.CONVERT[ "undefined" ][ name ] = options.empty;
+
             return true;
         },
 
