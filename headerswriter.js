@@ -86,13 +86,23 @@ class HeadersWriter extends HeadersParser {
         return headers;
     }
     writeOne( headers, conf, replace, value, old ){
-        const { header, multi } = conf;
-        if( NULL.includes( value ) )
-            delete headers[ header ];
-        else
-            headers[ header ] = multi?
+        const
+            { header, multi } = conf,
+            isBrowser = typeof headers.entries == "function";
+        if( NULL.includes( value ) ){
+            if( isBrowser )
+                headers.delete( header );
+            else
+                delete headers[ header ];
+        }else{
+            const result = multi?
                 this[ S.multi ]( multi, replace, conf, isArray( value )? value : [ value ], old, headers[ header ] ) :
                 this[ S.single ]( conf, value, replace? undefined : old );
+            if( isBrowser )
+                headers.set( header, result );
+            else
+                headers[ header ] = result;
+        }
     }
     [ S.multi ]( multi, replace, conf, value, old, lines=[] ){
         if( old )

@@ -7,6 +7,7 @@ const
     headers2pairs = {
         object: x => Object.entries(x),
         pairs: x => x,
+        headers: x => x.entries(),
         raw: x => {
             const pairs = [];
             for( let i=0; i<x.length; i+=2 )
@@ -128,7 +129,8 @@ class HeadersParser {
     }
 
     parse( headers, type ){
-        if( !type ) type = Array.isArray( headers )? "pairs" : "object";
+        if( typeof headers.entries == "function" ) type = "headers";
+        else if( !type ) type = Array.isArray( headers )? "pairs" : "object";
         const
             result = {},
             pairs = headers2pairs[ type ]( headers );
